@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css" />
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="js/clases.js"></script>
+    <script src="js/miCodigo.js"></script>
+    <script src="cordova.js"></script>
+</head>
+
+<body>
+
+    <!-- SPINNER MODAL -->
+    <ons-modal id="spinnerModal">
+        <div style="text-align: center">
+            <p>
+                <ons-icon icon="md-spinner" size="28px" spin></ons-icon>
+            </p>
+        </div>
+    </ons-modal>
+
+
+    <!-- SPLITTER -->
+    <ons-splitter>
+        <ons-splitter-side id="menu" side="left" width="220px" collapse>
+            <ons-page>
+                <ons-list-title>
+                    <p id="saludo"></p>
+                </ons-list-title>
+                <ons-list>
+                    <ons-list-item onclick="navegar('pedidos', false, false);" tappable>
+                        <div class="left">
+                            <ons-icon icon="fa-shopping-cart"></ons-icon>
+                        </div>
+                        <div class="center">
+                            Mis Pedidos
+                        </div>
+                    </ons-list-item>
+                    <ons-list-item onclick="navegar('favoritos', false, false);" tappable>
+                        <div class="left">
+                            <ons-icon icon="fa-heart"></ons-icon>
+                        </div>
+                        <div class="center">
+                            Favoritos
+                        </div>
+                    </ons-list-item>
+                    <ons-list-item onclick="cerrarSesion();" tappable>
+                        <div class="left">
+                            <ons-icon icon="fa-sign-out"></ons-icon>
+                        </div>
+                        <div class="center">
+                            Cerrar sesión
+                        </div>
+                    </ons-list-item>
+                </ons-list>
+            </ons-page>
+        </ons-splitter-side>
+        <ons-splitter-content id="content">
+            <ons-navigator swipeable id="myNavigator" page="login.html"></ons-navigator>
+        </ons-splitter-content>
+    </ons-splitter>
+
+
+
+
+
+    <!-- TABBAR HOME -->
+    <template id="tabbarHome.html">
+    <ons-page>
+      <ons-toolbar>
+        <div class="left">
+          <ons-toolbar-button onclick="abrirMenu()">
+            <ons-icon icon="md-menu"></ons-icon>
+          </ons-toolbar-button>
+        </div>
+        <div class="center">Pinta Rico</div>
+        <div class="right" style="opacity: 0;">
+          <ons-toolbar-button>
+
+          </ons-toolbar-button>
+        </div>
+      </ons-toolbar>
+      <ons-tabbar swipeable position="auto">
+        <ons-tab page="home.html" label="Inicio" icon="fa-home" active>
+        </ons-tab>
+        <ons-tab page="productos.html" label="Productos" icon="fa-utensils">
+        </ons-tab>
+      </ons-tabbar>
+    </ons-page>
+  </template>
+
+    <!-- HOME -->
+
+    <template id="home.html">
+    <ons-page id="home">
+        <div class="container">
+        <ons-carousel auto-scroll="" id="carousel" overscrollable="" style="text-align: center;" swipeable="">
+          <ons-carousel-item>
+            <div>
+                <img alt="" src="img/1.jpg">
+                </img>
+            </div>
+          </ons-carousel-item>
+          <ons-carousel-item>
+              <div>
+                  <img alt="" src="img/2.jpg">
+                  </img>
+              </div>
+          </ons-carousel-item>
+          <ons-carousel-item>
+              <div>
+                  <img alt="" src="img/3.jpg">
+                  </img>
+              </div>
+          </ons-carousel-item>
+        </ons-carousel>
+        <div class="destacados">
+          <h2>Productos destacados</h2>
+          <div class="tarjetasProductos">
+          
+          </div>
+        </div>
+      </div>
+      <p style="text-align: center;">
+      </p>
+      <script>
+        ons.getScriptPage().onInit = homeOnInit;
+        ons.getScriptPage().onShow = homeOnShow;
+      </script>
+    </ons-page>
+  </template>
+
+
+    <!-- PRODUCTOS -->
+
+    <template id='productos.html'>
+    <ons-page id='productos'>
+      <div class="busquedaQR">
+      <p style="text-align: center; margin-top: 10px;">
+        <ons-search-input placeholder="Buscar" onchange="buscarProductos(this.value)"></ons-search-input>
+      </p>
+      <ons-button modifier="quiet" onclick="escanearQR()">
+        <i class="fa fa-qrcode" aria-hidden="true"></i>
+      </ons-button>
+      </div>
+      <div class="listadoProductos">
+
+      </div>
+      <script>
+        ons.getScriptPage().onInit = productosOnInit;
+        ons.getScriptPage().onShow = productosOnShow;
+      </script>
+    </ons-page>
+  </template>
+
+    <!-- DETALLE PRODUCTO -->
+
+    <template id="detalleProducto.html">
+    <ons-page id="detalleProducto">
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button></ons-back-button>
+        </div>
+        <div class="center">
+          Detalle de producto
+        </div>
+        <div class="right" style="opacity: 0;">
+          <ons-toolbar-button>
+
+          </ons-toolbar-button>
+        </div>
+      </ons-toolbar>
+      <ons-card>
+
+      </ons-card>
+      <script>
+        ons.getScriptPage().onInit = detalleOnInit;
+      </script>
+    </ons-page>
+  </template>
+
+    <!-- FINALIZAR COMPRA -->
+    <template id="finalizarCompra.html">
+    <ons-page id="finalizarCompra">
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button></ons-back-button>
+        </div>
+        <div class="center">
+          Finalizar compra
+        </div>
+        <div class="right" style="opacity: 0;">
+          <ons-back-button></ons-back-button>
+        </div>
+      </ons-toolbar>
+      <div class="infoCompra container">
+
+      </div>
+      <script>
+        ons.getScriptPage().onInit = finalizarOnInit;
+      </script>
+    </ons-page>
+  </template>
+
+    <!-- ESCANEO QR -->
+    <template id="escaneo.html">
+      <ons-page id="escaneo">
+       <script>
+            // Script para lanzar la función de scanear.
+            ons.getScriptPage().onInit = escanearOnInit;
+            // Sobrescribo el back button para esconder el escaner y mandar a la pantalla anterior el valor ''.
+            document.querySelector('ons-back-button').onClick = function(event) {
+                if(window.QRScanner) {
+                    QRScanner.hide();
+                }
+                myNavigator.popPage({data: {scanText: ''}});
+            };
+        </script>
+        <ons-toolbar>
+            <div class="left">
+                <ons-back-button></ons-back-button>
+            </div>
+            <div class="center">Scan</div>
+            <div class="right" style="opacity: 0;">
+            </div>
+        </ons-toolbar>
+    </ons-page>
+  </template>
+
+    <!-- PEDIDOS -->
+    <template id="pedidos.html">
+    <ons-page id="pedidos">
+      <script>
+        ons.getScriptPage().onShow = pedidosOnShow;
+      </script>
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button></ons-back-button>
+        </div>
+        <div class="center">
+          Pedidos
+        </div>
+        <div class="right" style="opacity: 0;">
+          <ons-button></ons-button>
+        </div>
+      </ons-toolbar>
+      <div class="listaPedidos">
+
+      </div>
+    </ons-page>
+  </template>
+
+    <!-- COMENTARIOS -->
+    <template id="comentarios.html">
+    <ons-page id="comentarios">
+      <script>
+        ons.getScriptPage().onShow = comentariosOnShow;
+      </script>
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button></ons-back-button>
+        </div>
+        <div class="center">
+          Completar pedido
+        </div>
+        <div class="right" style="opacity: 0;">
+          <ons-button></ons-button>
+        </div>
+      </ons-toolbar>
+      <div class="container" id="detalleComentario">
+
+      </div>
+    </ons-page>
+  </template>
+
+    <!-- FAVORITOS -->
+    <template id="favoritos.html">
+    <ons-page id="favoritos">
+      <script>
+        ons.getScriptPage().onShow = favoritosOnShow;
+      </script>
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button></ons-back-button>
+        </div>
+        <div class="center">
+          Favoritos
+        </div>
+        <div class="right" style="opacity: 0;">
+          <ons-button></ons-button>
+        </div>
+      </ons-toolbar>
+      
+      <div class="listaFavoritos">
+        <p class='container' id='mensajeFavoritos'>No hay favoritos guardados.</p>
+      </div>
+    </ons-page>
+  </template>
+
+    <!-- ERROR CONEXION -->
+    <template id="error.html">
+    <ons-page id="error">
+      <img src="img/error.jpg" style="width: 100%;" alt="Sin conexión">
+      <h2>Sin conexión a internet</h2>
+      <ons-button onclick="online();">Reintentar</ons-button>
+    </ons-page>
+  </template>
+
+    <!-- LOADER -->
+    <template id="loader.html">
+    <ons-page id="loader" class="loaderPage">
+      <ons-progress-circular indeterminate></ons-progress-circular>
+    </ons-page>
+  </template>
+
+    <!-- LOGIN -->
+    <template id="login.html">
+    <ons-page id="login">
+      <div class="center"><h1>Bienvenido/a</h1></div>
+      <div style="text-align: center; margin-top: 20px;">
+        <p>
+          <ons-input id="nombreLogin" modifier="underbar" placeholder="Correo electrónico" float></ons-input>
+        </p>
+        <p>
+          <ons-input id="passwordLogin" modifier="underbar" type="password" placeholder="Password" float></ons-input>
+        </p>
+        <p id="msjLogin" style="color: red; margin-top: 1em;"></p>
+        <p style="margin-top: 30px;">
+          <ons-button class="center" onclick="loginIniciarSesionHandler();">Login</ons-button>
+        </p>
+        <p style="margin-top: 30px;">
+          <ons-button onclick="navegar('registro', false, false)" class="center registroBtn">Registrarse</ons-button>
+        </p>
+      </div>
+    </ons-page>
+  </template>
+
+    <!-- REGISTRO -->
+    <template id="registro.html">
+    <ons-page id="registro">
+      <ons-toolbar>
+        <div class="left">
+          <ons-back-button></ons-back-button>
+        </div>
+        <div class="center"></div>
+        <div class="right" style="opacity: 0;">
+          <ons-button></ons-button>
+        </div>
+      </ons-toolbar>
+
+      <div>
+        <h1 class="center">Crear cuenta</h1>
+        <p style="margin-top: 45px;">
+          <ons-input id="nombreRegistro" modifier="underbar" placeholder="Nombre" float></ons-input>
+        </p>
+        <p>
+          <ons-input id="apellidoRegistro" modifier="underbar" placeholder="Apellido" float></ons-input>
+        </p>
+        <p>
+          <ons-input id="passwordRegistro" modifier="underbar" type="password"
+            placeholder="Contraseña (min. 8 caracteres)" float></ons-input>
+        </p>
+        <p>
+          <ons-input id="mailRegistro" modifier="underbar" placeholder="Correo electrónico" float></ons-input>
+        </p>
+        <p>
+          <ons-input id="direccionRegistro" modifier="underbar" placeholder="Dirección" float></ons-input>
+        </p>
+        <p id="msjRegistro" style="color: red; margin-top: 1em;"></p>
+        <p style="margin-top: 30px;">
+          <ons-button onclick="registroRegistrarseHandler()">Registrarse</ons-button>
+        </p>
+        <p style="color: #a5a5a5; font-weight: 700;" onclick="volver()">volver</p>
+      </div>
+    </ons-page>
+  </template>
+</body>
+
+</html>
